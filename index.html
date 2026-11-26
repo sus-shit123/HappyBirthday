@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Happy Birthday 🎂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="bday.css">
+</head>
+<body data-theme="light">
+
+  <div class="aurora"><span></span><span></span><span></span><span></span></div>
+  <div id="particles"></div>
+
+  <div class="balloon b1"></div>
+  <div class="balloon b2"></div>
+  <div class="balloon b3"></div>
+  <div class="balloon b4"></div>
+
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark mode">🌙</button>
+
+  <div class="progress" id="progress"></div>
+
+  <div class="stage" id="stage">
+    <section class="slide active" data-index="0">
+      <div class="eyebrow">💗 POV 💗</div>
+      <h1>It's MY <em>favourite person's</em> birthday</h1>
+      <p class="sub">and you had to make it special 🌸</p>
+    </section>
+    <section class="slide" data-index="1">
+      <div class="orbit">
+        <div class="ring r1"></div>
+        <div class="ring r2"></div>
+        <div class="ring r3"></div>
+        <div class="bloom">🌸</div>
+      </div>
+      <h1>You are literally</h1>
+      <p class="quote">the universe's favourite creation ✨</p>
+    </section>
+    <section class="slide" data-index="2">
+      <h1 style="font-size:clamp(24px,5vw,36px);">Why you're amazing</h1>
+      <p class="sub" style="margin-top:6px;">let me count the ways 🎀</p>
+      <div class="reasons">
+        <div class="reason"><span class="ic">🌟</span>Your smile literally lights up every room</div>
+        <div class="reason"><span class="ic">💞</span>The way you care about people is unmatched</div>
+        <div class="reason"><span class="ic">✨</span>You make ordinary moments feel magical</div>
+        <div class="reason"><span class="ic">🎀</span>The world is genuinely better with you in it</div>
+      </div>
+    </section>
+    <section class="slide" data-index="3">
+      <div class="cake-wrap">
+        <div class="candles">
+          <div class="candle c1"><div class="flame" data-flame></div><div class="puff" data-puff>💨</div></div>
+          <div class="candle c2"><div class="flame" data-flame></div><div class="puff" data-puff>💨</div></div>
+          <div class="candle c3"><div class="flame" data-flame></div><div class="puff" data-puff>💨</div></div>
+        </div>
+        <div class="cake">
+          <div class="tier tier1"></div>
+          <div class="tier tier2"></div>
+          <div class="tier tier3"></div>
+        </div>
+      </div>
+      <div class="wish-cta">Make a wish 🌙</div>
+      <div class="hint">✨ tap anywhere to blow them out</div>
+    </section>
+    <section class="slide" data-index="4">
+      <div class="eyebrow">🎉 happy happy birthday 🎉</div>
+      <h1>Happy <em>Birthday!</em></h1>
+      <p class="quote">"May this year bring you everything your heart desires — love, laughter, adventures &amp; all your dreams come true 🌸"</p>
+      <div class="hearts">
+        <span>💗</span><span>💕</span><span>🎀</span><span>💖</span><span>💗</span>
+      </div>
+      <div class="credit">made with <b>♥</b> by Hetansh</div>
+      <button class="replay" id="replayBtn">↺ Play again</button>
+      <div class="burst" id="burst"></div>
+    </section>
+
+  </div>
+
+  <div class="tap-hint" id="tapHint">tap anywhere →</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const progressEl = document.getElementById('progress');
+  const stage = document.getElementById('stage');
+  const tapHint = document.getElementById('tapHint');
+  const themeToggle = document.getElementById('themeToggle');
+  let current = 0;
+  let candlesBlown = false;
+  let finaleFired = false;
+  for(let i=0;i<total;i++){
+    const dot = document.createElement('i');
+    progressEl.appendChild(dot);
+  }
+  function updateProgress(){
+    [...progressEl.children].forEach((d,i)=>{
+      d.classList.toggle('active', i===current);
+      d.classList.toggle('done', i<current);
+    });
+  }
+  function goTo(index){
+    if(index<0 || index>=total) return;
+    slides[current].classList.remove('active');
+    current = index;
+    slides[current].classList.add('active');
+    updateProgress();
+    tapHint.style.display = current===total-1 ? 'none' : 'flex';
+    if(current===3){ resetCandles(); }
+    if(current===total-1 && !finaleFired){ fireConfetti(); finaleFired = true; }
+  }
+
+  function next(){
+    if(current===3 && !candlesBlown){
+      blowCandles();
+      return;
+    }
+    if(current < total-1){ goTo(current+1); }
+  }
+
+  function resetCandles(){
+    candlesBlown = false;
+    document.querySelectorAll('[data-flame]').forEach(f=>f.classList.remove('out'));
+    document.querySelectorAll('[data-puff]').forEach(p=>p.classList.remove('go'));
+  }
+
+  function blowCandles(){
+    candlesBlown = true;
+    const flames = document.querySelectorAll('[data-flame]');
+    const puffs = document.querySelectorAll('[data-puff]');
+    flames.forEach((f,i)=>{
+      setTimeout(()=>{
+        f.classList.add('out');
+        puffs[i].classList.add('go');
+      }, i*150);
+    });
+    setTimeout(()=>goTo(current+1), 750);
+  }
+
+  stage.addEventListener('click', (e)=>{
+    spawnTapSparkle(e.clientX, e.clientY);
+    next();
+  });
+
+  document.addEventListener('keydown',(e)=>{
+    if(e.key==='ArrowRight' || e.key===' ') next();
+    if(e.key==='ArrowLeft') goTo(current-1);
+  });
+
+  document.getElementById('replayBtn').addEventListener('click',(e)=>{
+    e.stopPropagation();
+    finaleFired = false;
+    document.getElementById('burst').innerHTML = '';
+    goTo(0);
+  });
+  themeToggle.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    themeToggle.textContent = isDark ? '🌙' : '☀️';
+    themeToggle.classList.remove('spin');
+    void themeToggle.offsetWidth;
+    themeToggle.classList.add('spin');
+  });
+  const particleWrap = document.getElementById('particles');
+  const stickerEmojis = ['✨','🌸','💗','⭐','🎀','💫'];
+  function spawnParticle(){
+    const p = document.createElement('div');
+    p.className='particle';
+    p.textContent = stickerEmojis[Math.floor(Math.random()*stickerEmojis.length)];
+    p.style.left = Math.random()*100+'vw';
+    p.style.fontSize = (12 + Math.random()*10)+'px';
+    const dur = 9 + Math.random()*9;
+    p.style.animationDuration = dur+'s';
+    particleWrap.appendChild(p);
+    setTimeout(()=>p.remove(), dur*1000);
+  }
+  setInterval(spawnParticle, 550);
+  for(let i=0;i<10;i++) setTimeout(spawnParticle, i*280);
+  const confettiEmojis = ['💗','🎀','✨','🌸','⭐','💕'];
+  function fireConfetti(){
+    const burst = document.getElementById('burst');
+    for(let i=0;i<45;i++){
+      const c = document.createElement('div');
+      c.className='confetti';
+      c.textContent = confettiEmojis[Math.floor(Math.random()*confettiEmojis.length)];
+      c.style.left = Math.random()*100+'%';
+      c.style.fontSize = (12 + Math.random()*12)+'px';
+      c.style.animationDelay = (Math.random()*0.7)+'s';
+      c.style.animationDuration = (2.4 + Math.random()*1.2)+'s';
+      burst.appendChild(c);
+      setTimeout(()=>c.remove(), 4200);
+    }
+  }
+  const sparkleEmojis = ['✨','💫','⭐','🎀'];
+  function spawnTapSparkle(x,y){
+    for(let i=0;i<6;i++){
+      const s = document.createElement('div');
+      s.className='sparkle-burst';
+      s.textContent = sparkleEmojis[Math.floor(Math.random()*sparkleEmojis.length)];
+      s.style.left = x+'px';
+      s.style.top = y+'px';
+      const angle = (Math.PI*2*i)/6 + Math.random()*0.5;
+      const dist = 40 + Math.random()*30;
+      const tx = Math.cos(angle)*dist;
+      const ty = Math.sin(angle)*dist;
+      s.style.setProperty('--tx', `translate(${tx}px, ${ty}px)`);
+      document.body.appendChild(s);
+      setTimeout(()=>s.remove(), 750);
+    }
+  }
+
+  updateProgress();
+</script>
+
+</body>
+</html>
